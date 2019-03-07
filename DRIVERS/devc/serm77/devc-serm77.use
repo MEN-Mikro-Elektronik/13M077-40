@@ -1,0 +1,67 @@
+%C - Serial driver for MEN M45N, M69N and M77
+
+%C -D <devname> [options] [auto [options] auto ...]
+Options:
+ -D devname   Device name (set in MDIS Wizard)
+ -b number    Define initial baud rate (default 57600)
+ -c clk[/div] Set the input clock rate and divisor
+ -C number    Size of canonical input buffer (default 256)
+ -e           Set options to "edit" mode
+ -E           Set options to "raw" mode (default)
+ -I number    Size of raw input buffer (default 2048)
+ -f           Enable hardware flow control (default)
+ -F           Disable hardware flow control
+ -O number    Size of output buffer (default 2048)
+ -s           Enable software flow control
+ -S           Disable software flow control (default)
+ -u unit      Set serial unit number (default 1)
+ -m mode      Set operation mode (only with M77)
+              (1=RS422HD, 2=RS422FD, 3=RS485HD, 4=RS485FD, 7=RS232)
+ auto         If there is no 'auto' then all the M-Module UARTs will be used
+              If there is one or more 'auto' then the corresponding
+              number of UARTs will be used and the changed options will be
+              applied for the following UART
+
+=================================
+Driver for MEN M45N, M69N and M77
+=================================
+
+This driver is MDIS-dependent so you should have mdis_kernel running
+on your system. See MDIS for QNX User Manual for details.
+
+The driver supports the same features as the standard QNX devc-ser8250
+driver plus some additional ones:
+
+* With the '-D <devname>' option you tell which device (set in MDIS Wizard).
+  The corresponding file '<devname>.bin' should be available in the
+  directory /etc/mdis/.
+
+* With the M77 the UART supports additional modes which can be selected by
+  the drivers '-m' option:
+
+  Mode:                 Option:
+  -----                 -------
+  RS422 (half-duplex)   -m 1
+  RS422 (full-duplex)   -m 2
+  RS485 (half-duplex)   -m 3
+  RS485 (full-duplex)   -m 4
+  RS232                 -m 7
+
+  The mode can be set differently for each UART. Just issue the option
+  multiple times (first one is for first UART, second for second, ...).
+
+* Each driver instance handles only one M-Module.
+  If more are needed launch another instance.
+
+
+Examples:
+---------
+%C -D m77_1
+
+  Start driver with all options set in MDIS Wizard.
+
+%C -D m77_1 -esF -m 2 auto -m 3 auto
+
+  The first UART operates in RS422 full-duplex mode and the second one in
+  RS485 half-duplex. No further UARTs are used. Both UARTs operate in edit
+  mode with hardware flow control disabled and software flow control enabled.
